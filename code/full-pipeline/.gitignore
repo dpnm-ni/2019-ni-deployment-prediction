@@ -1,0 +1,16 @@
+tmp*
+*.RData
+*.RHist
+*.Rhistory
+.Rproj.user
+*.Rproj
+sfcrhist*.txt
+*.rds
+requests-*.txt
+h2omodels-*
+xgb-grid/*
+data/*
+h2o-10h-*
+nodeinfo*.txt
+routeinfo*.txt
+nvnfs*.txt

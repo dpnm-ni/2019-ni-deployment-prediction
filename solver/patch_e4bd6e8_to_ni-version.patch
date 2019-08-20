@@ -1,0 +1,380 @@
+From 0104ed6ec7b69e0b78e967d9d329c6be63f70569 Mon Sep 17 00:00:00 2001
+From: stas <uni@staslange.de>
+Date: Mon, 1 Jul 2019 11:29:56 +0900
+Subject: [PATCH] Changes for deployment module.
+
+---
+ .gitignore                                    |  8 +++-
+ data-generator/traffic-generator-internet2.cc |  2 +-
+ patch_e4bd6e8_to_ni-version.patch             |  0
+ src/CMakeLists.txt                            | 20 +++++++++
+ src/Makefile                                  |  5 ++-
+ .../CMakeFiles/clion-log.txt                  |  1 +
+ src/cplex5-pz.h                               | 43 +++++++++++++++----
+ src/inet2                                     | 28 ++++++++++++
+ src/mec                                       | 32 ++++++++++++++
+ src/middlebox-spec                            |  9 ++--
+ src/middleman.cc                              |  4 +-
+ src/util.h                                    | 16 +++++++
+ src/viterbi.h                                 | 14 ++++++
+ 13 files changed, 163 insertions(+), 19 deletions(-)
+ create mode 100644 patch_e4bd6e8_to_ni-version.patch
+ create mode 100644 src/CMakeLists.txt
+ create mode 100644 src/cmake-build-debug/CMakeFiles/clion-log.txt
+ create mode 100644 src/inet2
+ create mode 100644 src/mec
+
+diff --git a/.gitignore b/.gitignore
+index 998250b..a2bd5ff 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -1,3 +1,7 @@
+-src/*.o
++*.log
++src/.idea
++src/log*
++src/nvnfs.txt
++src/sfcr*
++src/traf-*
+ src/middleman
+-
+diff --git a/data-generator/traffic-generator-internet2.cc b/data-generator/traffic-generator-internet2.cc
+index ffde8d5..62a3ce3 100644
+--- a/data-generator/traffic-generator-internet2.cc
++++ b/data-generator/traffic-generator-internet2.cc
+@@ -67,7 +67,7 @@ int main(int argc, char *argv[]) {
+   FILE *ofp = fopen("traffic-request", "w");
+   for (int i = 1, current_time = 0; i <= kMaxTrafficFileIndex; ++i) {
+     std::string kTrafficFileName =
+-        "/home/sr2chowd/UW/middlebox-placement/traffic-data-yzhang/X";
++        "/mnt/e/data/abilene/X";
+     kTrafficFileName += (i <= 9 ? "0" : "") + std::to_string(i);
+     printf("Openning %s\n", kTrafficFileName.c_str());
+     FILE *ifp = fopen(kTrafficFileName.c_str(), "r");
+diff --git a/patch_e4bd6e8_to_ni-version.patch b/patch_e4bd6e8_to_ni-version.patch
+new file mode 100644
+index 0000000..e69de29
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+new file mode 100644
+index 0000000..0817bfc
+--- /dev/null
++++ b/src/CMakeLists.txt
+@@ -0,0 +1,20 @@
++# cmake_minimum_required(VERSION <specify CMake version here>)
++project(src)
++
++set(CMAKE_CXX_STANDARD 14)
++
++include_directories(.)
++
++add_executable(src
++        cplex4-hb.h
++        cplex4-hw.h
++        cplex4-pz.h
++        cplex4.h
++        cplex5-pz.h
++        cplex5.h
++        datastructure.h
++        io.h
++        log_processor.cc
++        middleman.cc
++        util.h
++        viterbi.h)
+diff --git a/src/Makefile b/src/Makefile
+index cec99b0..901e96d 100644
+--- a/src/Makefile
++++ b/src/Makefile
+@@ -1,7 +1,8 @@
+-LIB_PATHS = -L$(CPLEX_ROOT)/cplex/lib/x86-64_sles10_4.1/static_pic -L$(CPLEX_ROOT)/concert/lib/x86-64_sles10_4.1/static_pic
++#LIB_PATHS = -L$(CPLEX_ROOT)/cplex/lib/x86-64_sles10_4.1/static_pic -L$(CPLEX_ROOT)/concert/lib/x86-64_sles10_4.1/static_pic
++LIB_PATHS = -L$(CPLEX_ROOT)/cplex/lib/x86-64_linux/static_pic -L$(CPLEX_ROOT)/concert/lib/x86-64_linux/static_pic
+ 
+ INCLUDE_PATHS = -I$(CPLEX_ROOT)/cplex/include -I$(CPLEX_ROOT)/concert/include
+-LIBS = -lilocplex -lconcert -lcplex -lm -lpthread
++LIBS = -lilocplex -lconcert -lcplex -lm -lpthread -ldl
+ DFLAGS = -DIL_STD -DCPLEX_PZ
+ FILES = middleman.cc
+ 
+diff --git a/src/cmake-build-debug/CMakeFiles/clion-log.txt b/src/cmake-build-debug/CMakeFiles/clion-log.txt
+new file mode 100644
+index 0000000..c7ba5e8
+--- /dev/null
++++ b/src/cmake-build-debug/CMakeFiles/clion-log.txt
+@@ -0,0 +1 @@
++Toolchains are not configured Configure
+diff --git a/src/cplex5-pz.h b/src/cplex5-pz.h
+index 8c6c809..f9c025b 100644
+--- a/src/cplex5-pz.h
++++ b/src/cplex5-pz.h
+@@ -80,20 +80,22 @@ void run_cplex(std::vector<traffic_request> traffic_requests, double &opex,
+                string topology_filename) {
+ 
+   bool atleast_one_solution_found = false;
+-  for (int time_limit = 10; time_limit < 90; time_limit += 10) {
++  for (int time_limit = 80000; time_limit <= 320000; time_limit *= 2) {
+     // for (int time_limit = 100; time_limit < 180; time_limit += 10) {
+     auto solution_start_time = std::chrono::high_resolution_clock::now();
+ 
+     int lower_bound = 1;
+-    int upper_bound = traffic_requests.size() * 3;
++    int upper_bound = traffic_requests.size() * 4;
+ 
+     int max_vnf = ceil((lower_bound + upper_bound) / 2.0);
++    // Avoid skipping some values during binary search.
++    double max_vnf_dbl = (lower_bound + upper_bound) / 2.0;
+     int last_max_vnf = 0;
+ 
+     int is_feasible = 0;  // 0 = Infeasible, 1 = feasible
+ 
+     while (max_vnf != last_max_vnf) {
+-      // cout << "Run Max VNF = " << max_vnf << endl;
++      // cout << "Run Max VNF = " << max_vnf << " Time Limit = " << time_limit << endl;
+       last_max_vnf = max_vnf;
+       run_cplex_opt(traffic_requests, opex, opex_breakdown, running_time,
+                     sequence, path, all_edges, delays, utilization,
+@@ -103,9 +105,12 @@ void run_cplex(std::vector<traffic_request> traffic_requests, double &opex,
+         upper_bound = max_vnf;
+         atleast_one_solution_found = true;
+       } else {
+-        lower_bound = max_vnf;
++        // lower_bound = max_vnf;
++        lower_bound = floor(max_vnf_dbl);
+       }
+       max_vnf = ceil((lower_bound + upper_bound) / 2.0);
++      max_vnf_dbl = (lower_bound + upper_bound) / 2.0;
++      // cout << "[bounds] Max VNF " << max_vnf << " || lb = " << lower_bound << " || ub = " << upper_bound << endl;
+     }
+ 
+     if (atleast_one_solution_found) {
+@@ -1135,9 +1140,9 @@ void run_cplex_opt(std::vector<traffic_request> traffic_requests, double &opex,
+     const IloInt timeLimit = time_limit;  // in seconds
+     const IloNum relativeGap =
+         0.001;  // find Integer solution within 0.1% of optimal
+-    cplex.setParam(IloCplex::TiLim, timeLimit);
+-    // cplex.setParam(IloCplex::EpGap, relativeGap);
+-    // cplex.setParam(IloCplex::Threads, 2);
++    cplex.setParam(IloCplex::DetTiLim, timeLimit);
++    //cplex.setParam(IloCplex::EpGap, relativeGap);
++    cplex.setParam(IloCplex::Threads, 1);
+     cplex.setParam(IloCplex::MemoryEmphasis, true);
+     cplex.setParam(IloCplex::PreDual, true);
+     if (!cplex.solve()) {
+@@ -1193,6 +1198,9 @@ void run_cplex_opt(std::vector<traffic_request> traffic_requests, double &opex,
+     cplex.getValues(ym, ym_vals);
+   std:
+     string type = "";
++    //
++    int nmboxes = 0;
++    //
+     for (int m = 0, sw; m < kMboxCount; ++m) {
+       if (fabs(ym_vals[m] - 1) < EPS) {
+         if (mboxType[m] == 0) {
+@@ -1207,11 +1215,22 @@ void run_cplex_opt(std::vector<traffic_request> traffic_requests, double &opex,
+         sw = switch4mbox[m];
+         DEBUG("Middlebox %d (%s) is active on switch %d\n", m, type.c_str(),
+               sw);
++
++        //
++        if (mboxType[m] > 1) {
++            DEBUG("[vnfloc] mbox %s; node %d\n", type.c_str(), sw + 1);
++            nmboxes++;
++        }
++        //
+       }
+     }
++    //
++    DEBUG("[vnfloc] nmboxes: %d\n", nmboxes);
++    //
+ 
+     // print ztn_n
+     // cout << endl;
++    DEBUG("[routeinfo] start\n");
+     for (int t = 0; t < kTrafficCount; ++t) {
+       for (int n = 0; n < trafficNodeCount[t]; ++n) {
+         IloNumArray ztn_n_vals(env, kSwitchCount);
+@@ -1222,7 +1241,15 @@ void run_cplex_opt(std::vector<traffic_request> traffic_requests, double &opex,
+                 "Traffic %d node %d provisioned on switch %d pseudo-switch "
+                 "%d\n",
+                 t, n, _s, _s);
+-          }
++            //
++            if (n > 0 && n < trafficNodeCount[t] - 1) {
++                // t + 1 for mapping to our requestIDs whose index starts with 1.
++                // n for mbox number is okay since it actually starts with node 0 for the request's source node.
++                // _s + 1 for mapping to our nodeIDs whose index starts with 1.
++                DEBUG("[routeinfo] demand %d; mbox %d; node %d\n", t + 1, n, _s + 1);
++            }
++            //
++}
+         }
+       }
+     }
+diff --git a/src/inet2 b/src/inet2
+new file mode 100644
+index 0000000..9302b65
+--- /dev/null
++++ b/src/inet2
+@@ -0,0 +1,28 @@
++12 15
++0 0
++1 160 
++2 0
++3 160
++4 160
++5 160
++6 0
++7 0
++8 0
++9 160
++10 160
++11 160
++0 1 10000000 1
++1 4 10000000 117
++1 5 10000000 58
++1 11 10000000 84
++2 5 10000000 26
++2 8 10000000 70
++3 6 10000000 63
++3 9 10000000 129
++3 10 10000000 209
++4 6 10000000 90
++4 7 10000000 189
++5 6 10000000 54
++7 9 10000000 36
++8 11 10000000 23
++9 10 10000000 86
+diff --git a/src/mec b/src/mec
+new file mode 100644
+index 0000000..c691ddc
+--- /dev/null
++++ b/src/mec
+@@ -0,0 +1,32 @@
++16 15
++0 0
++1 0
++2 0
++3 0
++4 0
++5 0
++6 40
++7 40
++8 40
++9 40
++10 40
++11 40
++12 40
++13 40
++14 0
++15 400
++0 2 10000000 30
++0 3 10000000 30
++1 4 10000000 30
++1 5 10000000 30
++0 14 100000000 50
++1 14 100000000 50
++2 6 10000000 10
++2 7 10000000 10
++3 8 10000000 10
++3 9 10000000 10
++4 10 10000000 10
++4 11 10000000 10
++5 12 10000000 10
++5 13 10000000 10
++14 15 100000000 80
+diff --git a/src/middlebox-spec b/src/middlebox-spec
+index 35b97d6..7486340 100644
+--- a/src/middlebox-spec
++++ b/src/middlebox-spec
+@@ -1,4 +1,5 @@
+-firewall,4,45,900000,0.0
+-proxy,4,40,900000,0.0
+-nat,1,10,900000,0.0
+-ids,8,1,600000,0.0
++firewall,4,45,900000,0.0
++proxy,4,40,900000,0.0
++ids,8,1,600000,0.0
++nat,1,10,900000,0.0
++wano,4,5,400000,0.0
+diff --git a/src/middleman.cc b/src/middleman.cc
+index 79c6140..0243c91 100644
+--- a/src/middleman.cc
++++ b/src/middleman.cc
+@@ -277,8 +277,8 @@ int main(int argc, char *argv[]) {
+       elapsed_time += solution_time;
+       UpdateResources(result.get(), traffic_requests[i]);
+       RefreshServerStats(current_time);
+-      // printf("i = %d, %s\n", i,
+-      // traffic_requests[i].GetDebugString().c_str());
++      printf("i = %d, %s\n", i,
++      traffic_requests[i].GetDebugString().c_str());
+       // Progress bar
+       if (i % 500 == 0) {
+         double percentage_completed = 100.0 * static_cast<double>(i) /
+diff --git a/src/util.h b/src/util.h
+index 650c9f1..c383c08 100644
+--- a/src/util.h
++++ b/src/util.h
+@@ -212,12 +212,28 @@ int UsedMiddleboxIndex(int current_node, const middlebox &m_box,
+ 
+ void UpdateMiddleboxInstances(int current_node, const middlebox *m_box,
+                               const traffic_request &t_request) {
++
++  // m_box.middlebox_name.c_str()
++  DEBUG("[xxx] Placing request (arrivalTime: %d, src: %d, dst: %d, minBw: %d, maxDelay: %d, SFC: [%d, %d, %d])\n", t_request.arrival_time,
++          t_request.source, t_request.destination, t_request.min_bandwidth, t_request.max_delay,
++        t_request.middlebox_sequence[0], t_request.middlebox_sequence[1], t_request.middlebox_sequence[2]);
++  DEBUG("[UpdateMiddleboxInstances] node: %d, mbox: %s\n", current_node, m_box->middlebox_name.c_str());
++  //
++
+   int used_middlebox_index =
+       UsedMiddleboxIndex(current_node, *m_box, t_request);
+   if (used_middlebox_index != NIL) {
++      //
++      DEBUG("[UpdateMiddleboxInstances] using existing mbox\n");
++      DEBUG("[xxx] Using existing %s VNF instance on node %d.\n", m_box->middlebox_name.c_str(), current_node);
++      //
+     deployed_mboxes[current_node][used_middlebox_index].residual_capacity -=
+         t_request.min_bandwidth;
+   } else {
++      //
++      DEBUG("[UpdateMiddleboxInstances] placing new mbox\n");
++      DEBUG("[xxx] Placing new %s VNF instance on node %d.\n", m_box->middlebox_name.c_str(), current_node);
++      //
+     deployed_mboxes[current_node].emplace_back(
+         m_box, m_box->processing_capacity - t_request.min_bandwidth);
+     ReduceNodeCapacity(current_node, *m_box);
+diff --git a/src/viterbi.h b/src/viterbi.h
+index 4fd86ca..4fa7e61 100644
+--- a/src/viterbi.h
++++ b/src/viterbi.h
+@@ -81,6 +81,9 @@ std::unique_ptr<std::vector<int> > ViterbiCompute(
+         if (new_middlebox_deployed) {
+           current_vector[current_node].cpu_cores[current_node] -=
+               m_box.cpu_requirement;
++          // or current_vector[current_node].*?
++          // DEBUG("[stas] ? placing new middlebox %s at node %d\n", m_box.middlebox_name.c_str(), current_node);
++          //
+         }
+       } else {
+         current_vector[current_node].cpu_cores.clear();
+@@ -118,6 +121,17 @@ std::unique_ptr<std::vector<int> > ViterbiCompute(
+   return_vector->push_back(t_request.source);
+   std::reverse(return_vector->begin(), return_vector->end());
+   return_vector->push_back(t_request.destination);
++
++  //
++  DEBUG("[stas] vector content\n");
++  for (int i = 0; i < return_vector->size(); ++i) {
++    //if (i != 0) DEBUG(",");
++    DEBUG("[stas] %d\n", return_vector->at(i));
++  }
++  DEBUG("[stas] vector content end\n");
++  //DEBUG("Vector: ", return_vector->);
++  //
++
+   return std::move(return_vector);
+ }
+ 
+-- 
+2.17.1
+
