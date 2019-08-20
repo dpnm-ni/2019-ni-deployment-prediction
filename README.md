@@ -11,7 +11,7 @@ Use existing placement algorithms to generate (problem, solution) pairs for netw
 3. Calculation of optimal placements for the above mentioned problem instances.
 4. Extraction of optimal placement information from solver log files.
 5. Consolidation of solver results.
-6. Generation of training data for deployment decisions by using solver results to extract features and deployment decisions.
+6. Generation of training data for deployment decisions by using solver results to extract features and deployment decisions. A detailed overview of extracted features is provided in `code/full-pipeline/feature-description.txt`.
 7. Training of supervised machine learning models using the H2O framework [7].
 
 ## Components / Structure
@@ -27,16 +27,19 @@ Use existing placement algorithms to generate (problem, solution) pairs for netw
 ## Dependencies and Usage Instructions
 
 ### Traffix Matrix Data
-* Download traffic matrix data (file names X01 through X24) from [2] into the abilene folder.
+
+* Download traffic matrix data (file names X01 through X24) from [2] into the `abilene` folder.
 
 ### ILP Solver
-* Prepare dependencies for CPLEX-based ILP solver: Java, CPLEX (we used v12.8), environment variables such as JAVA_HOME and CPLEX_ROOT.
-* Clone repository [6] into solver/middlebox-placement.
-* Apply patch file patch_e4bd6e8_to_ni-version.patch according to instructions in solver/readme.txt.
-* Compile by running "make dbg" in solver/middlebox-placement/src.
-* Create log file folder solver/middlebox-placement/src/logs or change the corresponding parameter (LOGFILEPATH) that is passed in steps 2-4.
+
+* Prepare dependencies for CPLEX-based ILP solver: Java, CPLEX (we used v12.8), environment variables such as `JAVA_HOME` and `CPLEX_ROOT`.
+* Clone repository [6] into `solver/middlebox-placement`.
+* Apply patch file `patch_e4bd6e8_to_ni-version.patch` according to instructions in `solver/readme.txt`.
+* Compile by running `make dbg` in `solver/middlebox-placement/src`.
+* Create log file folder `solver/middlebox-placement/src/logs` or change the corresponding parameter (`LOGFILEPATH`) that is passed in steps 2-4.
 
 ### R / H2O
+
 * Install the H2O ML framework / R package [8].
 * Install required packages: data.table, dplyr, forcats, ggplot2, optparse, purrr, RColorBrewer, RcppRoll, readr, tidyr (some are part of the tidyverse package and can therefore be skipped if tidyverse is already installed).
 
@@ -44,8 +47,8 @@ Use existing placement algorithms to generate (problem, solution) pairs for netw
 * GNU parallel [9].
 
 ### Usage
-* code/full-pipeline/runwk_template.sh: exemplary bash script that covers steps 1 to 6, i.e., from generation of requests to extraction of training data.
-* code/full-pipeline/007_trainAutoMLModel.R: example for training an H2O AutoML model.
+* `code/full-pipeline/runwk_template.sh`: exemplary bash script that covers steps 1 to 6, i.e., from generation of requests to extraction of training data.
+* `code/full-pipeline/007_trainAutoMLModel.R`: example for training an H2O AutoML model.
 
 ### Publication
 

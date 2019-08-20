@@ -1,0 +1,427 @@
+"narrivals": Number of arrivals during aggregation interval.
+"ndepartures": Number of departures during aggregation interval (departure occurs at t = arrivaltime + duration).
+"meanarrrate": Mean arrival rate, i.e., number of arrivals / duration of aggreagtion interval.
+"meandeprate": Mean departure rate - cf. arrival rate.
+"changeN": Change in the number of instantiated VNFs (type-independent), i.e., n_vnfs at the end of the aggregation interval - n_vnfs at its beginning.
+"changeB": Change in the total requested bandwidth (type-independent). Unit: kbps.
+"changeNproxy": Change in the number of instantiated VNFs (type-dependent). In this case, proxy.
+"changeBproxy": Change in the total requested bandwidth (type-dependent). Unit: kbps.
+"lastactionproxy1": Last action that wasn't "doNothing" performed for VNF (type-dependent). Either 1 or -1, indicating that the action was "add" / "remove".
+"lastactionproxy2": Action before the last one (type-dependent).
+"lastactionproxy3": 3rd recent action (type-dependent).
+"lastactionproxy4": 4th recent action (type-dependent).
+"lastactionproxy5": 5th recent action (type-dependent).
+"timesincelastactionproxy": Time (in seconds) since last action (type-dependent), i.e., t_end_of_aggregation_interval - t_last_action.
+"nfirewall1": Last five values of the number of VNF instances (type-dependent). In this case, firewall. nfirewall1 = most recent one.
+"nfirewall2": See above.
+"nfirewall3": See above.
+"nfirewall4": See above.
+"nfirewall5": See above.
+"bwfirewall1": Last five values of the amount of requested bandwidth (type-dependent). Unit: kbps.
+"bwfirewall2": See above.
+"bwfirewall3": See above.
+"bwfirewall4": See above.
+"bwfirewall5": See above.
+"bwallocfirewall1": Last five values of the amount of allocated bandwidth (type-dependent). Unit: kbps. This is calculated by multiplying the number of active VNF instances with the VNF capacity.
+"bwallocfirewall2": See above.
+"bwallocfirewall3": See above.
+"bwallocfirewall4": See above.
+"bwallocfirewall5": See above.
+"bwtocapfirewall1": Last five values of the difference between the amount of allocated and requested bandwidth (type-dependent).
+"bwtocapfirewall2": See above.
+"bwtocapfirewall3": See above.
+"bwtocapfirewall4": See above.
+"bwtocapfirewall5": See above.
+"bwtoshutfirewall1": Last five values of the difference between the requested amount of bandwidth and the bandwidth level that corresponds to allocating one instance less than is currently active. For example, if we have 3 firewalls with a capacity of 900Mbps each (resulting in 2700Mbps of allocated bandwidth) and the bandwidth sum of all firewall-related requests equals, 2500Mbps, bwtoshutfirewall equals 2500Mbps - 2 * 900Mbps = 700Mbps.
+"bwtoshutfirewall2": See above.
+"bwtoshutfirewall3": See above.
+"bwtoshutfirewall4": See above.
+"bwtoshutfirewall5": See above.
+"bwtocapnfirewall1": Same as bwtocapfirewall1, but normalized with the capacity.
+"bwtocapnfirewall2": See above.
+"bwtocapnfirewall3": See above.
+"bwtocapnfirewall4": See above.
+"bwtocapnfirewall5": See above.
+"bwtoshutnfirewall1": Same as bwtoshutfirewall1, but normalized with the capacity.
+"bwtoshutnfirewall2": See above.
+"bwtoshutnfirewall3": See above.
+"bwtoshutnfirewall4": See above.
+"bwtoshutnfirewall5": See above.
+"utilfirewall1": Last five values of VNF utilization (type-dependent). Utilization is calculated as ratio between requested and allocation bandwidth. 
+"utilfirewall2": See above.
+"utilfirewall3": See above.
+"utilfirewall4": See above.
+"utilfirewall5": See above.
+[The following fields are identical to the previous ones, but with other VNFs (currently considered VNFs: firewall, proxy, ids, nat).]
+"nids1"
+"nids2"
+"nids3"
+"nids4"
+"nids5"
+"bwids1"
+"bwids2"
+"bwids3"
+"bwids4"
+"bwids5"
+"bwallocids1"
+"bwallocids2"
+"bwallocids3"
+"bwallocids4"
+"bwallocids5"
+"bwtocapids1"
+"bwtocapids2"
+"bwtocapids3"
+"bwtocapids4"
+"bwtocapids5"
+"bwtoshutids1"
+"bwtoshutids2"
+"bwtoshutids3"
+"bwtoshutids4"
+"bwtoshutids5"
+"bwtocapnids1"
+"bwtocapnids2"
+"bwtocapnids3"
+"bwtocapnids4"
+"bwtocapnids5"
+"bwtoshutnids1"
+"bwtoshutnids2"
+"bwtoshutnids3"
+"bwtoshutnids4"
+"bwtoshutnids5"
+"nnat1"
+"nnat2"
+"nnat3"
+"nnat4"
+"nnat5"
+"bwnat1"
+"bwnat2"
+"bwnat3"
+"bwnat4"
+"bwnat5"
+"bwallocnat1"
+"bwallocnat2"
+"bwallocnat3"
+"bwallocnat4"
+"bwallocnat5"
+"bwtocapnat1"
+"bwtocapnat2"
+"bwtocapnat3"
+"bwtocapnat4"
+"bwtocapnat5"
+"bwtoshutnat1"
+"bwtoshutnat2"
+"bwtoshutnat3"
+"bwtoshutnat4"
+"bwtoshutnat5"
+"bwtocapnnat1"
+"bwtocapnnat2"
+"bwtocapnnat3"
+"bwtocapnnat4"
+"bwtocapnnat5"
+"bwtoshutnnat1"
+"bwtoshutnnat2"
+"bwtoshutnnat3"
+"bwtoshutnnat4"
+"bwtoshutnnat5"
+"nproxy1"
+"nproxy2"
+"nproxy3"
+"nproxy4"
+"nproxy5"
+"bwproxy1"
+"bwproxy2"
+"bwproxy3"
+"bwproxy4"
+"bwproxy5"
+"bwallocproxy1"
+"bwallocproxy2"
+"bwallocproxy3"
+"bwallocproxy4"
+"bwallocproxy5"
+"bwtocapproxy1"
+"bwtocapproxy2"
+"bwtocapproxy3"
+"bwtocapproxy4"
+"bwtocapproxy5"
+"bwtoshutproxy1"
+"bwtoshutproxy2"
+"bwtoshutproxy3"
+"bwtoshutproxy4"
+"bwtoshutproxy5"
+"bwtocapnproxy1"
+"bwtocapnproxy2"
+"bwtocapnproxy3"
+"bwtocapnproxy4"
+"bwtocapnproxy5"
+"bwtoshutnproxy1"
+"bwtoshutnproxy2"
+"bwtoshutnproxy3"
+"bwtoshutnproxy4"
+"bwtoshutnproxy5"
+"nvnfs1": Last five values of the number of VNFs (type-independent).
+"nvnfs2": See above.
+"nvnfs3": See above.
+"nvnfs4": See above.
+"nvnfs5": See above.
+"totalbw1": Last five values of the total amount of requested bandwidth (type-independent).
+"totalbw2": See above.
+"totalbw3": See above.
+"totalbw4": See above.
+"totalbw5": See above.
+"rate1": Arrival rate in the first half of the aggregation interval.
+"rate2": Arrival rate in the second half of the aggregation interval.
+"mean.nvnfs": Mean number of VNF instances during the aggregation interval (type-independent).
+"median.nvnfs": Median of the number of VNF instances during the aggregation interval (type-independent).
+"sd.nvnfs": Standard deviation of the number of VNF instances during the aggregation interval (type-independent).
+"cv.nvnfs": Coefficient of variation of the number of VNF instances during the aggregation interval (type-independent).
+"min.nvnfs": Minimum number of VNF instances during the aggregation interval (type-independent).
+"max.nvnfs": Maximum number of VNF instances during the aggregation interval (type-independent).
+"slope.nvnfs": "Slope" of . This is calculated as the difference between the mean value in the second half of the aggregation interval and the mean value in the first one.
+"mean.totalbw": Mean amount of requested bandwidth during the aggregation interval (type-independent). Below statistics analogous to *.nvnfs.
+"median.totalbw"
+"sd.totalbw"
+"cv.totalbw"
+"min.totalbw"
+"max.totalbw"
+"slope.totalbw"
+"mean.nfirewall": Mean number of VNF instances during the aggregation interval (per VNF type). Below statistics analogous to *.nvnfs.
+"median.nfirewall"
+"sd.nfirewall"
+"cv.nfirewall"
+"min.nfirewall"
+"max.nfirewall"
+"slope.nfirewall"
+"mean.nids"
+"median.nids"
+"sd.nids"
+"min.nids"
+"max.nids"
+"slope.nids"
+"mean.nnat"
+"median.nnat"
+"sd.nnat"
+"min.nnat"
+"max.nnat"
+"slope.nnat"
+"mean.nproxy"
+"median.nproxy"
+"sd.nproxy"
+"min.nproxy"
+"max.nproxy"
+"slope.nproxy"
+"mean.bwfirewall"
+"median.bwfirewall"
+"sd.bwfirewall"
+"cv.bwfirewall"
+"min.bwfirewall"
+"max.bwfirewall"
+"slope.bwfirewall"
+"mean.bwids"
+"median.bwids"
+"sd.bwids"
+"min.bwids"
+"max.bwids"
+"slope.bwids"
+"mean.bwnat"
+"median.bwnat"
+"sd.bwnat"
+"min.bwnat"
+"max.bwnat"
+"slope.bwnat"
+"mean.bwproxy"
+"median.bwproxy"
+"sd.bwproxy"
+"min.bwproxy"
+"max.bwproxy"
+"slope.bwproxy"
+"mean.bwallocfirewall"
+"median.bwallocfirewall"
+"sd.bwallocfirewall"
+"cv.bwallocfirewall"
+"min.bwallocfirewall"
+"max.bwallocfirewall"
+"slope.bwallocfirewall"
+"mean.bwallocids"
+"median.bwallocids"
+"sd.bwallocids"
+"min.bwallocids"
+"max.bwallocids"
+"slope.bwallocids"
+"mean.bwallocnat"
+"median.bwallocnat"
+"sd.bwallocnat"
+"min.bwallocnat"
+"max.bwallocnat"
+"slope.bwallocnat"
+"mean.bwallocproxy"
+"median.bwallocproxy"
+"sd.bwallocproxy"
+"min.bwallocproxy"
+"max.bwallocproxy"
+"slope.bwallocproxy"
+"mean.utilfirewall"
+"median.utilfirewall"
+"sd.utilfirewall"
+"cv.utilfirewall"
+"min.utilfirewall"
+"max.utilfirewall"
+"slope.utilfirewall"
+"mean.bwtocapfirewall"
+"median.bwtocapfirewall"
+"sd.bwtocapfirewall"
+"cv.bwtocapfirewall"
+"min.bwtocapfirewall"
+"max.bwtocapfirewall"
+"slope.bwtocapfirewall"
+"mean.bwtocapids"
+"median.bwtocapids"
+"sd.bwtocapids"
+"min.bwtocapids"
+"max.bwtocapids"
+"slope.bwtocapids"
+"mean.bwtocapnat"
+"median.bwtocapnat"
+"sd.bwtocapnat"
+"min.bwtocapnat"
+"max.bwtocapnat"
+"slope.bwtocapnat"
+"mean.bwtocapproxy"
+"median.bwtocapproxy"
+"sd.bwtocapproxy"
+"min.bwtocapproxy"
+"max.bwtocapproxy"
+"slope.bwtocapproxy"
+"mean.bwtocapnfirewall"
+"median.bwtocapnfirewall"
+"sd.bwtocapnfirewall"
+"cv.bwtocapnfirewall"
+"min.bwtocapnfirewall"
+"max.bwtocapnfirewall"
+"slope.bwtocapnfirewall"
+"mean.bwtocapnids"
+"median.bwtocapnids"
+"sd.bwtocapnids"
+"min.bwtocapnids"
+"max.bwtocapnids"
+"slope.bwtocapnids"
+"mean.bwtocapnnat"
+"median.bwtocapnnat"
+"sd.bwtocapnnat"
+"min.bwtocapnnat"
+"max.bwtocapnnat"
+"slope.bwtocapnnat"
+"mean.bwtocapnproxy"
+"median.bwtocapnproxy"
+"sd.bwtocapnproxy"
+"min.bwtocapnproxy"
+"max.bwtocapnproxy"
+"slope.bwtocapnproxy"
+"mean.bwtoshutfirewall"
+"median.bwtoshutfirewall"
+"sd.bwtoshutfirewall"
+"cv.bwtoshutfirewall"
+"min.bwtoshutfirewall"
+"max.bwtoshutfirewall"
+"slope.bwtoshutfirewall"
+"mean.bwtoshutids"
+"median.bwtoshutids"
+"sd.bwtoshutids"
+"min.bwtoshutids"
+"max.bwtoshutids"
+"slope.bwtoshutids"
+"mean.bwtoshutnat"
+"median.bwtoshutnat"
+"sd.bwtoshutnat"
+"min.bwtoshutnat"
+"max.bwtoshutnat"
+"slope.bwtoshutnat"
+"mean.bwtoshutproxy"
+"median.bwtoshutproxy"
+"sd.bwtoshutproxy"
+"min.bwtoshutproxy"
+"max.bwtoshutproxy"
+"slope.bwtoshutproxy"
+"mean.bwtoshutnfirewall"
+"median.bwtoshutnfirewall"
+"sd.bwtoshutnfirewall"
+"cv.bwtoshutnfirewall"
+"min.bwtoshutnfirewall"
+"max.bwtoshutnfirewall"
+"slope.bwtoshutnfirewall"
+"mean.bwtoshutnids"
+"median.bwtoshutnids"
+"sd.bwtoshutnids"
+"min.bwtoshutnids"
+"max.bwtoshutnids"
+"slope.bwtoshutnids"
+"mean.bwtoshutnnat"
+"median.bwtoshutnnat"
+"sd.bwtoshutnnat"
+"min.bwtoshutnnat"
+"max.bwtoshutnnat"
+"slope.bwtoshutnnat"
+"mean.bwtoshutnproxy"
+"median.bwtoshutnproxy"
+"sd.bwtoshutnproxy"
+"min.bwtoshutnproxy"
+"max.bwtoshutnproxy"
+"slope.bwtoshutnproxy"
+"changeNfirewall": Change in the number of instantiated VNFs (per VNF type), i.e., n_vnfs at the end of the aggregation interval - n_vnfs at its beginning.
+"changeBfirewall": Change in the total requested bandwidth (per VNF type). Unit: kbps.
+"changeNids"
+"changeBids"
+"changeNnat"
+"changeBnat"
+"slopei.nvnfs": Sign of slope*-features from above, i.e., 1 for values > 0, 0 for values == 0, and -1 for values < 0.
+"slopei.totalbw"
+"slopei.nfirewall"
+"slopei.nids"
+"slopei.nnat"
+"slopei.nproxy"
+"slopei.bwfirewall"
+"slopei.bwids"
+"slopei.bwnat"
+"slopei.bwproxy"
+"slopei.bwallocfirewall"
+"slopei.bwallocids"
+"slopei.bwallocnat"
+"slopei.bwallocproxy"
+"slopei.utilfirewall"
+"slopei.bwtocapfirewall"
+"slopei.bwtocapids"
+"slopei.bwtocapnat"
+"slopei.bwtocapproxy"
+"slopei.bwtocapnfirewall"
+"slopei.bwtocapnids"
+"slopei.bwtocapnnat"
+"slopei.bwtocapnproxy"
+"slopei.bwtoshutfirewall"
+"slopei.bwtoshutids"
+"slopei.bwtoshutnat"
+"slopei.bwtoshutproxy"
+"slopei.bwtoshutnfirewall"
+"slopei.bwtoshutnids"
+"slopei.bwtoshutnnat"
+"slopei.bwtoshutnproxy"
+"lastactionfirewall1": See lastactionproxy1.
+"lastactionfirewall2"
+"lastactionfirewall3"
+"lastactionfirewall4"
+"lastactionfirewall5"
+"timesincelastactionfirewall"
+"lastactionids1"
+"lastactionids2"
+"lastactionids3"
+"lastactionids4"
+"lastactionids5"
+"timesincelastactionids"
+"lastactionnat1"
+"lastactionnat2"
+"lastactionnat3"
+"lastactionnat4"
+"lastactionnat5"
+"timesincelastactionnat"
+"meangrowthrate": Difference between the mean arrival rate and the mean departure rate.
+"rateslope": Slope of the arrival rate.
+"rateslopei": Sign of the slope of the arrival rate.
+"action": Action regarding the firewall VNF. Takes on values "add", "remove", and "doNothing" - indicating that the number of instantiated VNFs between the current time t_cur and the time (t_cur + p) increased, decreased, or did not change, respectively. In the previous statement, p denotes the prediction time (how "far" we predict).
